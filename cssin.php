@@ -12,7 +12,7 @@ require_once dirname(__FILE__).'/vendor/csstidy/class.csstidy.php';
 *
 * $cssin = new CSSIN();
 *
-* $inlined_html = $sccin->inlineCSS('http://some_url.com/file.html');
+* $html_with_inlined_css = $cssin->inlineCSS('http://some_url.com/file.html');
 *
 */
 
