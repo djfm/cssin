@@ -226,6 +226,11 @@ class CSSIN
 			$html = str_get_html($contents, true, true, DEFAULT_TARGET_CHARSET, false, DEFAULT_BR_TEXT, DEFAULT_SPAN_TEXT);
 		}
 
+		if(!is_object($html))
+		{
+			return false;
+		}
+
 		$css_urls = array();
 
 		// Find all stylesheets and determine their absolute URLs to retrieve them 
