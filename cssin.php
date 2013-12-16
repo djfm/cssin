@@ -39,7 +39,7 @@ class CSSIN
 	* retrieve the CSS, parse it, sort the rules by increasing order of specificity,
 	* cache the rules, return them.
 	*/
-	public function getParsedCSS($urls)
+	public function getCSSFromFiles($urls)
 	{
 		$key = implode('::', $urls);
 		if(!isset($this->parsed_css[$key]))
@@ -50,6 +50,60 @@ class CSSIN
 				$texts[] = $this->getCSS($url);
 			}
 			$text = implode("\n\n", $texts);
+			$this->parsed_css[$key] = true;
+		}
+		return $text;
+    }
+
+    public static function splitMediaQueries($css)
+    {
+
+		$start = 0;
+		$queries = '';
+
+		while (($start = strpos($css, "@media", $start)) !== false)
+		{
+			// stack to manage brackets
+			$s = array();
+
+			// get the first opening bracket
+			$i = strpos($css, "{", $start);
+
+			// if $i is false, then there is probably a css syntax error
+			if ($i !== false)
+			{
+				// push bracket onto stack
+				array_push($s, $css[$i]);
+
+				// move past first bracket
+				$i++;
+
+				while (!empty($s))
+				{
+					// if the character is an opening bracket, push it onto the stack, otherwise pop the stack
+					if ($css[$i] == "{")
+					{
+						array_push($s, "{");
+					}
+					elseif ($css[$i] == "}")
+					{
+						array_pop($s);
+					}
+
+					$i++;
+				}
+
+				$queries .= substr($css, $start-1, $i+1-$start) . "\n";
+				$css = substr($css, 0, $start-1) . substr($css, $i);
+				$i = $start;
+			}
+		}
+
+		return array($css, $queries);
+    }
+
+	public function parseCSS($text)
+    {
 			$css  = new csstidy();
 			$css->parse($text);
 
@@ -96,9 +150,7 @@ class CSSIN
 				}
 			});
 
-			$this->parsed_css[$key] = $rules;
-		}
-		return $this->parsed_css[$key];
+		return $rules;
 	}
 
 	/**
@@ -240,10 +292,32 @@ class CSSIN
 			$style->outertext = '';
 		}
 
+		$css_blocks = '';
+
+		// Find all <style> blocks and cut styles from them (leaving media queries)
+		foreach($html->find('style') as $style)
+		{
+			list($_css_to_parse, $_css_to_keep) = self::splitMediaQueries($style->innertext());
+			$css_blocks .= $_css_to_parse;
+			if (!empty($_css_to_keep)) {
+				$style->innertext = $_css_to_keep;
+			} else {
+				$style->outertext = '';
+			}
+		}
+
+		$raw_css = '';
+		if (!empty($css_urls)) {
+			$raw_css .= $this->getCSSFromFiles($css_urls);
+		}
+		if (!empty($css_blocks)) {
+			$raw_css .= $css_blocks;
+		}
+
 		// Get the CSS rules by decreasing order of specificity.
 		// This is an array with, amongst other things, the keys 'properties', which hold the CSS properties
 		// and the 'selector', which holds the CSS selector
-		$rules = $this->getParsedCSS($css_urls);
+		$rules = $this->parseCSS($raw_css);
 		
 		// We loop over each rule by increasing order of specificity, find the nodes matching the selector
 		// and apply the CSS properties
