@@ -50,9 +50,9 @@ class CSSIN
 				$texts[] = $this->getCSS($url);
 			}
 			$text = implode("\n\n", $texts);
-			$this->parsed_css[$key] = true;
+			$this->parsed_css[$key] = $text;
 		}
-		return $text;
+		return $this->parsed_css[$key];
     }
 
     public static function splitMediaQueries($css)
@@ -203,6 +203,9 @@ class CSSIN
 
 		foreach(explode(';', $str) as $kv)
 		{
+			if ($kv === '')
+				continue;
+
 			$key_value = explode(':', $kv);
 			$array[trim($key_value[0])] = trim($key_value[1]);
 		}
@@ -267,7 +270,7 @@ class CSSIN
 	*/
 	function inlineCSS($url, $contents=null)
 	{
-		// Download the HTML if it was note provided
+		// Download the HTML if it was not provided
 		if($contents === null)
 		{
 			$html = file_get_html($url, false, null, -1, -1, true, true, DEFAULT_TARGET_CHARSET, false, DEFAULT_BR_TEXT, DEFAULT_SPAN_TEXT);
