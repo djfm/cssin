@@ -1,7 +1,10 @@
 <?php
 
-require_once dirname(__FILE__).'/vendor/simple_html_dom/simple_html_dom.php';
-require_once dirname(__FILE__).'/vendor/csstidy/class.csstidy.php';
+namespace FM;
+
+require_once dirname(__FILE__).'/../vendor/simple_html_dom/simple_html_dom.php';
+require_once dirname(__FILE__).'/../vendor/csstidy/class.csstidy.php';
+
 
 /*
 * A class to inline CSS.
