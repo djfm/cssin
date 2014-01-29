@@ -107,7 +107,7 @@ class CSSIN
 
 	public function parseCSS($text)
     {
-			$css  = new csstidy();
+			$css  = new \csstidy();
 			$css->parse($text);
 
 			$rules 		= array();
