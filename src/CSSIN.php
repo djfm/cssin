@@ -1,5 +1,22 @@
 <?php
 
+/*
+	Copyright 2013-2014, François-Marie de Jouvencel
+
+	This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 namespace FM;
 
 require_once dirname(__FILE__).'/../vendor/simple_html_dom/simple_html_dom.php';
@@ -11,11 +28,6 @@ require_once dirname(__FILE__).'/../vendor/csstidy/class.csstidy.php';
 *
 * It honours !important attributes and doesn't choke on complex styles.
 *
-* Usage:
-*
-* $cssin = new CSSIN();
-*
-* $html_with_inlined_css = $cssin->inlineCSS('http://some_url.com/file.html');
 *
 */
 
@@ -120,8 +132,8 @@ class CSSIN
 					foreach(explode(",", $selectors) as $selector)
 					{
 						$rules[] = array(
-							'position' 		=> $position, 
-							'specificity' 	=> self::calculateCSSSpecifity($selector), 
+							'position' 		=> $position,
+							'specificity' 	=> self::calculateCSSSpecifity($selector),
 							'selector' 		=> $selector,
 							'properties' 	=> $properties
 						);
@@ -157,7 +169,7 @@ class CSSIN
 	}
 
 	/**
-	 * The following function fomes from CssToInlineStyles.php - here is the original licence FOR THIS FUNCTION 
+	 * The following function fomes from CssToInlineStyles.php - here is the original licence FOR THIS FUNCTION
 	 *
 	 * CSS to Inline Styles class
 	 *
@@ -291,7 +303,7 @@ class CSSIN
 
 		$css_urls = array();
 
-		// Find all stylesheets and determine their absolute URLs to retrieve them 
+		// Find all stylesheets and determine their absolute URLs to retrieve them
 		foreach($html->find('link[rel="stylesheet"]') as $style)
 		{
 			$css_urls[] = self::absolutify($url, $style->href);
@@ -324,7 +336,7 @@ class CSSIN
 		// This is an array with, amongst other things, the keys 'properties', which hold the CSS properties
 		// and the 'selector', which holds the CSS selector
 		$rules = $this->parseCSS($raw_css);
-		
+
 		// We loop over each rule by increasing order of specificity, find the nodes matching the selector
 		// and apply the CSS properties
 		foreach ($rules as $rule)
@@ -363,7 +375,7 @@ class CSSIN
 
 		// Now a tricky part: do a second pass with only stuff marked !important
 		// because !important properties do not care about specificity, except when fighting
-		// agains another !important property
+		// against another !important property
 		foreach ($rules as $rule)
 		{
 			foreach($rule['properties'] as $key => $value)
