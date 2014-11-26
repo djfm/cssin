@@ -44,6 +44,10 @@ class CSSIN
 	{
 		if(!isset($cssFiles[$url]))
 		{
+			// Check if http exists
+			if ( $sUrl = strstr($url,'//') ) {
+				$url = 'http:'.$sUrl;
+			}
 			$cssFiles[$url]	= file_get_contents($url);
 		}
 		return $cssFiles[$url];
